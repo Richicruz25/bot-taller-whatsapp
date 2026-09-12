@@ -50,9 +50,9 @@ async def receive_message(request: Request):
       message_body = value["messages"][0]["text"]["body"]
       sender_number = value["messages"][0]["from"]
 
-      # Generar respuesta con Gemini usando gemini-2.0-flash
+      # Generar respuesta con Gemini usando gemini-3.6-flash
       response = client.models.generate_content(
-          model="gemini-2.0-flash",
+          model="gemini-3.6-flash",
           contents=f"{PROMPT_SISTEMA}\n\nCliente pregunta: {message_body}",
       )
 

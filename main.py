@@ -1,78 +1,86 @@
-import os
-import warnings
-from fastapi import FastAPI, Request, Response, Query
+import requests
+from fastapi import FastAPI, Request, Response
 from google import genai
-
-warnings.filterwarnings("ignore")
 
 app = FastAPI()
 
-# Configuración del cliente de Gemini
-client = genai.Client(api_key=os.environ.get("GEMINI_API_KEY"))
+# Inicializar el cliente de Gemini utilizando la variable de entorno
+client = genai.Client()
 
-# Tu Token de verificación (lo ingresarás en la consola de Meta)
-VERIFY_TOKEN = "mi_token_secreto_123"
+# Token de verificación que configuraste en Meta para el Webhook (GET)
+VERIFY_TOKEN = "token_secreto_123"
 
-PROMPT_SISTEMA = """
-Eres el asistente virtual amable del Taller de Pintura y Latonería Automotriz de mi papá.
-Tu objetivo es dar cotizaciones estimadas por WhatsApp a los clientes de forma concisa.
+# Prompt del sistema para definir la personalidad o contexto del bot
+PROMPT_SISTEMA = (
+    "Eres un asistente virtual experto para un taller automotriz."
+)
 
-PRECIOS BASE DE REFERENCIA (COP):
-- Parachoques / Defensa: $250.000
-- Capó: $350.000
-- Puerta: $280.000
-- Pintura General: $2.500.000
-- Recargo por trabajo de Latonería / Desabollado: +$80.000 por pieza.
-
-REGLAS:
-1. Sé muy cordial, usa emojis de autos (🚗, 🎨, 🛠️, 💰).
-2. Si piden varias piezas, suma los precios correctamente.
-3. Si la pieza no está en la lista, da un rango estimado entre $200.000 y $300.000 COP.
-4. Recuerda al cliente que el precio final se confirma en la revisión presencial.
-5. Usa texto claro con negritas (*ejemplo*) apto para WhatsApp.
-"""
 
 @app.get("/")
 def home():
-    return {"mensaje": "Bot del taller funcionando correctamente"}
+  return {"mensaje": "Bot del taller funcionando correctamente"}
 
-# 1. Validación de Meta (GET)
+
+# 1. Verificación del Webhook de WhatsApp (GET)
 @app.get("/webhook")
-def verify_webhook(
-    hub_mode: str = Query(None, alias="hub.mode"),
-    hub_challenge: str = Query(None, alias="hub.challenge"),
-    hub_verify_token: str = Query(None, alias="hub.verify_token")
-):
-    if hub_mode == "subscribe" and hub_verify_token == VERIFY_TOKEN:
-        return Response(content=hub_challenge, media_type="text/plain")
-    return Response(content="Token de verificación inválido", status_code=403)
+async def verify_webhook(request: Request):
+  hub_mode = request.query_params.get("hub.mode")
+  hub_verify_token = request.query_params.get("hub.verify_token")
+  hub_challenge = request.query_params.get("hub.challenge")
 
-# 2. Recepción de mensajes de WhatsApp (POST)
+  if hub_mode == "subscribe" and hub_verify_token == VERIFY_TOKEN:
+    return Response(content=hub_challenge, media_type="text/plain")
+  return Response(
+      content="Token de verificación inválido", status_code=403
+  )
+
+
+# 2. Recepción y respuesta de mensajes de WhatsApp (POST)
 @app.post("/webhook")
 async def receive_message(request: Request):
-    data = await request.json()
-    
-    # Extraer el mensaje si proviene de una interacción de chat
-    try:
-        entry = data["entry"][0]
-        changes = entry["changes"][0]
-        value = changes["value"]
-        
-        if "messages" in value:
-            message_body = value["messages"][0]["text"]["body"]
-            sender_number = value["messages"][0]["from"]
-            
-            # Generar respuesta con Gemini
-            response = client.models.generate_content(
-                model="gemini-2.5-flash",
-                contents=f"{PROMPT_SISTEMA}\n\nCliente pregunta: {message_body}"
-            )
-            
-            print(f"Mensaje recibido de {sender_number}: {message_body}")
-            print(f"Respuesta generada: {response.text}")
-            
-            # Aquí se conectará el envío de vuelta a la API de WhatsApp
-    except Exception as e:
-        print(f"Evento no procesado o error: {e}")
-        
-    return {"status": "success"}
+  data = await request.json()
+
+  try:
+    entry = data["entry"][0]
+    changes = entry["changes"][0]
+    value = changes["value"]
+
+    if "messages" in value:
+      message_body = value["messages"][0]["text"]["body"]
+      sender_number = value["messages"][0]["from"]
+
+      # Generar respuesta con Gemini
+      response = client.models.generate_content(
+          model="gemini-2.5-flash",
+          contents=f"{PROMPT_SISTEMA}\n\nCliente pregunta: {message_body}",
+      )
+
+      respuesta_texto = response.text
+
+      # Tus datos oficiales de Meta
+      phone_number_id = "134346735884304"
+      whatsapp_token = (
+          "EAARmMZC3PHwBSZA4yggt6wTJNxOiYUizCXB6TTWCo1H"
+          "FHSkegUZAQtKknCUqfhdZAPfDKJP2yUiq9nsDopueZA98PZAZC7c"
+          "2UUJ4ne1f88EOCYXtKC8Biyf7KC8bizvCZv8dz15MwwkP70wpJ64z"
+          "4TWeAE8mb"
+      )
+
+      whatsapp_url = f"https://graph.facebook.com/v20.0/{phone_number_id}/messages"
+      headers = {
+          "Authorization": f"Bearer {whatsapp_token}",
+          "Content-Type": "application/json",
+      }
+      payload = {
+          "messaging_product": "whatsapp",
+          "to": sender_number,
+          "text": {"body": respuesta_texto},
+      }
+
+      # Enviar la respuesta de vuelta a WhatsApp
+      requests.post(whatsapp_url, json=payload, headers=headers)
+
+  except Exception as e:
+    print(f"Error procesando el mensaje: {e}")
+
+  return {"status": "ok"}

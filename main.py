@@ -48,12 +48,11 @@ async def receive_message(request: Request):
       message_body = value["messages"][0]["text"]["body"]
       sender_number = value["messages"][0]["from"]
       
-      # Imprimir en los logs de Render quién está escribiendo y qué dice
       print(f"Mensaje recibido de {sender_number}: {message_body}")
 
-      # Generar respuesta con Gemini usando gemini-3.6-flash
+      # Generación de respuesta con el modelo estándar de Gemini
       response = client.models.generate_content(
-          model="gemini-3.6-flash",
+          model="gemini-2.5-flash",
           contents=f"{PROMPT_SISTEMA}\n\nCliente pregunta: {message_body}",
       )
 
@@ -61,7 +60,7 @@ async def receive_message(request: Request):
 
       # Tus datos oficiales de Meta
       phone_number_id = "1343467358843046"
-      whatsapp_token = "EAARmbMZC3PHwBSQE7OAxddOkSjdbhByk5w5SZAYLZAj17ZA8wCzQZBxadvlkwyknZAxeGVqmDt5zrEjjPUndwdZAtHi3pXb3lcfwb8iF1OTxZAncTxHjHJ7FTE4DqPRZB6v6DB0pVhzgvm5RpIeGBXRYVbiLlGglUvsyOKLkmt6OXbqkVzwgZA7CRd9YqVvgZB6CZAar3u9RqnNLtLDVruGIfKpaqSCH6qJEzBNeVcXkeEUYNYm1tam3AMq4h8ygesjfTddJDHuEoNndnxY5TY146O5HjGPc"
+      whatsapp_token = "EAARmbMZC3PHwBSZAHkbM963hZCQ0z2io2kJSZCUqlGvZC0mZAdUTjaHolCNm6guE8tSqG4NhY04sGId857zxZCFZAwB984xp5lPmdG2R8fRKSh6gPd9zcKnxUBh6TWQGLcU9ymhWABvEGIWcEy6BjCoYEPlNY0AZBFwaPGC6xjammVVaF4CCtDONiTPjOqtjZBgSvZBwqJl8OtfEOJa1wXPO2OOimS3gNAseYAIeDGgYsO41nR977Grtig0YQJAf5qy5hS4KTKZAwUaUxAL9yu9mhNwVB98x"
 
       whatsapp_url = f"https://graph.facebook.com/v20.0/{phone_number_id}/messages"
       headers = {
@@ -74,7 +73,6 @@ async def receive_message(request: Request):
           "text": {"body": respuesta_texto},
       }
 
-      # Enviar la respuesta de vuelta a WhatsApp e imprimir el resultado en consola
       res = requests.post(whatsapp_url, json=payload, headers=headers)
       print(f"Estado de Meta al responder: {res.status_code} - Respuesta: {res.text}")
 

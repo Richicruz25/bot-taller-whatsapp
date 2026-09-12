@@ -8,7 +8,7 @@ app = FastAPI()
 client = genai.Client()
 
 # Token de verificación que configuraste en Meta para el Webhook (GET)
-VERIFY_TOKEN = "token_secreto_123"
+VERIFY_TOKEN = "mi_token_secreto_123"
 
 # Prompt del sistema para definir la personalidad o contexto del bot
 PROMPT_SISTEMA = (

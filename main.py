@@ -8,7 +8,7 @@ app = FastAPI()
 # Inicializar el cliente de Gemini utilizando la variable de entorno para la API Key
 client = genai.Client()
 
-# Token de verificación que configuraste en Meta para el Webhook (GET)
+# Token de verificación que configuraste en Meta para el Webhook (GET y POST)
 VERIFY_TOKEN = "mi_token_secreto_123"
 
 # Prompt del sistema para definir la personalidad o contexto del bot
@@ -56,8 +56,8 @@ async def receive_message(request: Request):
 
       respuesta_texto = response.text
 
-      # Tus datos oficiales de Meta
-      phone_number_id = "134346735884304"
+      # Tus datos oficiales de Meta corregidos con el ID completo
+      phone_number_id = "1343467358843046"
       whatsapp_token = "EAARmbMZC3PHwBSZAHkbM963hZCQ0z2io2kJSZCUqlGvZC0mZAdUTjaHolCNm6guE8tSqG4NhY04sGId857zxZCFZAwB984xp5lPmdG2R8fRKSh6gPd9zcKnxUBh6TWQGLcU9ymhWABvEGIWcEy6BjCoYEPlNY0AZBFwaPGC6xjammVVaF4CCtDONiTPjOqtjZBgSvZBwqJl8OtfEOJa1wXPO2OOimS3gNAseYAIeDGgYsO41nR977Grtig0YQJAf5qy5hS4KTKZAwUaUxAL9yu9mhNwVB98x"
 
       whatsapp_url = f"https://graph.facebook.com/v20.0/{phone_number_id}/messages"
@@ -71,7 +71,7 @@ async def receive_message(request: Request):
           "text": {"body": respuesta_texto},
       }
 
-      # Enviar la respuesta de vuelta a WhatsApp e imprimir el resultado
+      # Enviar la respuesta de vuelta a WhatsApp e imprimir el resultado en consola
       res = requests.post(whatsapp_url, json=payload, headers=headers)
       print(f"Estado de Meta: {res.status_code} - Respuesta: {res.text}")
 

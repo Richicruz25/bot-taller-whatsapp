@@ -47,6 +47,9 @@ async def receive_message(request: Request):
     if "messages" in value:
       message_body = value["messages"][0]["text"]["body"]
       sender_number = value["messages"][0]["from"]
+      
+      # Imprimir en los logs de Render quién está escribiendo y qué dice
+      print(f"Mensaje recibido de {sender_number}: {message_body}")
 
       # Generar respuesta con Gemini usando gemini-3.6-flash
       response = client.models.generate_content(
@@ -56,7 +59,7 @@ async def receive_message(request: Request):
 
       respuesta_texto = response.text
 
-      # Tus datos oficiales de Meta corregidos con el ID completo
+      # Tus datos oficiales de Meta
       phone_number_id = "1343467358843046"
       whatsapp_token = "EAARmbMZC3PHwBSZAHkbM963hZCQ0z2io2kJSZCUqlGvZC0mZAdUTjaHolCNm6guE8tSqG4NhY04sGId857zxZCFZAwB984xp5lPmdG2R8fRKSh6gPd9zcKnxUBh6TWQGLcU9ymhWABvEGIWcEy6BjCoYEPlNY0AZBFwaPGC6xjammVVaF4CCtDONiTPjOqtjZBgSvZBwqJl8OtfEOJa1wXPO2OOimS3gNAseYAIeDGgYsO41nR977Grtig0YQJAf5qy5hS4KTKZAwUaUxAL9yu9mhNwVB98x"
 
@@ -73,7 +76,7 @@ async def receive_message(request: Request):
 
       # Enviar la respuesta de vuelta a WhatsApp e imprimir el resultado en consola
       res = requests.post(whatsapp_url, json=payload, headers=headers)
-      print(f"Estado de Meta: {res.status_code} - Respuesta: {res.text}")
+      print(f"Estado de Meta al responder: {res.status_code} - Respuesta: {res.text}")
 
   except Exception as e:
     print(f"Error procesando el mensaje: {e}")

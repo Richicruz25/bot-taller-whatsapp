@@ -71,8 +71,9 @@ async def receive_message(request: Request):
           "text": {"body": respuesta_texto},
       }
 
-      # Enviar la respuesta de vuelta a WhatsApp
-      requests.post(whatsapp_url, json=payload, headers=headers)
+      # Enviar la respuesta de vuelta a WhatsApp e imprimir el resultado
+      res = requests.post(whatsapp_url, json=payload, headers=headers)
+      print(f"Estado de Meta: {res.status_code} - Respuesta: {res.text}")
 
   except Exception as e:
     print(f"Error procesando el mensaje: {e}")

@@ -5,8 +5,8 @@ from google import genai
 
 warnings.filterwarnings("ignore")
 
-# Toma la API Key desde las variables de entorno del servidor
-client = genai.Client()
+# Pasar explícitamente la API Key almacenada en Render
+client = genai.Client(api_key=os.environ.get("GEMINI_API_KEY"))
 app = FastAPI()
 
 PROMPT_SISTEMA = """

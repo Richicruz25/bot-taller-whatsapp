@@ -1,10 +1,11 @@
+import os
 import requests
 from fastapi import FastAPI, Request, Response
 from google import genai
 
 app = FastAPI()
 
-# Inicializar el cliente de Gemini utilizando la variable de entorno
+# Inicializar el cliente de Gemini utilizando la variable de entorno para la API Key
 client = genai.Client()
 
 # Token de verificación que configuraste en Meta para el Webhook (GET)
@@ -49,9 +50,9 @@ async def receive_message(request: Request):
       message_body = value["messages"][0]["text"]["body"]
       sender_number = value["messages"][0]["from"]
 
-      # Generar respuesta con Gemini
+      # Generar respuesta con Gemini usando el modelo actualizado
       response = client.models.generate_content(
-          model="gemini-2.5-flash",
+          model="gemini-2.5",
           contents=f"{PROMPT_SISTEMA}\n\nCliente pregunta: {message_body}",
       )
 

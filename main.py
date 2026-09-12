@@ -61,10 +61,8 @@ async def receive_message(request: Request):
       # Tus datos oficiales de Meta
       phone_number_id = "134346735884304"
       whatsapp_token = (
-          "EAARmMZC3PHwBSZA4yggt6wTJNxOiYUizCXB6TTWCo1H"
-          "FHSkegUZAQtKknCUqfhdZAPfDKJP2yUiq9nsDopueZA98PZAZC7c"
-          "2UUJ4ne1f88EOCYXtKC8Biyf7KC8bizvCZv8dz15MwwkP70wpJ64z"
-          "4TWeAE8mb"
+          "EAARmbMZC3PHwBSZAHkbM963hZCQ0z2io2kJSZCUqlGvZC0mZAdUTjaHolCNm6guE8tSqG4NhY04sGId857zxZCFZAwB984xp5lPmdG2R8fRKSh6gPd9zcKnxUBh6TWQGLcU9ymhWABvEGIWcEy6BjCoYEPlNY0AZBFwaPGC6xjammVVaF4CCtDONiTPjOqtjZBgSvZBwqJl8OtfEOJa1wXPO2OOimS3gNAseYAIeDGgYsO41nR977Grtig0YQJAf5qy5hS4KTKZAwUaUxAL9yu9mhNwVB98x"
+       
       )
 
       whatsapp_url = f"https://graph.facebook.com/v20.0/{phone_number_id}/messages"

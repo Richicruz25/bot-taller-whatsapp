@@ -31,9 +31,7 @@ async def verify_webhook(request: Request):
 
   if hub_mode == "subscribe" and hub_verify_token == VERIFY_TOKEN:
     return Response(content=hub_challenge, media_type="text/plain")
-  return Response(
-      content="Token de verificación inválido", status_code=403
-  )
+  return Response(content="Token de verificación inválido", status_code=403)
 
 
 # 2. Recepción y respuesta de mensajes de WhatsApp (POST)
@@ -60,10 +58,7 @@ async def receive_message(request: Request):
 
       # Tus datos oficiales de Meta
       phone_number_id = "134346735884304"
-      whatsapp_token = (
-          "EAARmbMZC3PHwBSZAHkbM963hZCQ0z2io2kJSZCUqlGvZC0mZAdUTjaHolCNm6guE8tSqG4NhY04sGId857zxZCFZAwB984xp5lPmdG2R8fRKSh6gPd9zcKnxUBh6TWQGLcU9ymhWABvEGIWcEy6BjCoYEPlNY0AZBFwaPGC6xjammVVaF4CCtDONiTPjOqtjZBgSvZBwqJl8OtfEOJa1wXPO2OOimS3gNAseYAIeDGgYsO41nR977Grtig0YQJAf5qy5hS4KTKZAwUaUxAL9yu9mhNwVB98x"
-       
-      )
+      whatsapp_token = "EAARmbMZC3PHwBSZAHkbM963hZCQ0z2io2kJSZCUqlGvZC0mZAdUTjaHolCNm6guE8tSqG4NhY04sGId857zxZCFZAwB984xp5lPmdG2R8fRKSh6gPd9zcKnxUBh6TWQGLcU9ymhWABvEGIWcEy6BjCoYEPlNY0AZBFwaPGC6xjammVVaF4CCtDONiTPjOqtjZBgSvZBwqJl8OtfEOJa1wXPO2OOimS3gNAseYAIeDGgYsO41nR977Grtig0YQJAf5qy5hS4KTKZAwUaUxAL9yu9mhNwVB98x"
 
       whatsapp_url = f"https://graph.facebook.com/v20.0/{phone_number_id}/messages"
       headers = {
